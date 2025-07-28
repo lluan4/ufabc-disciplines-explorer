@@ -1,4 +1,4 @@
-import IUndergraduateCourseCategories from './undergraduate-course-categories.contract';
+import IUndergraduateCourseCategories from './undergraduate-course-categories.model';
 
 export const undergraduateCourseCategories: IUndergraduateCourseCategories[] = [
   {

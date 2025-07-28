@@ -1,22 +1,16 @@
-import { RouteObject } from 'react-router-dom';
+import { Params, RouteObject, useParams } from 'react-router-dom';
 
 import { pathKeys } from '@/shared/router';
+import { HeaderCourseCatalog } from '@/shared/ui/header/header.ui';
 
-import CourseDetails from '../course-details/course-details.ui';
-import QuadIdeal from '../quad-ideal/quad-ideal.ui';
 import CourseCatalog from './course-catalog.ui';
 
-export const homeRoute: RouteObject = {
-  path: pathKeys.home,
+export const catalogRoute: RouteObject = {
+  path: pathKeys.catalog,
   element: <CourseCatalog />,
-  children: [
-    {
-      path: ':course/:subjectCode',
-      element: <CourseDetails />,
+  handle: {
+    header: (params: { course: string; subjectCode: string }) => {
+      return <HeaderCourseCatalog params={params} />;
     },
-    {
-      path: 'quad-ideal',
-      element: <QuadIdeal />,
-    },
-  ],
+  },
 };

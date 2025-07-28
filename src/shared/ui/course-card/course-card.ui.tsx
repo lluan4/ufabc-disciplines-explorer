@@ -1,15 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { Badge } from '@/shared/ui/components/badge';
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/shared/ui/components/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/components/card';
 
 type CourseCardProps = {
   subjectName: string;
