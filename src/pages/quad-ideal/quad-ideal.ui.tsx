@@ -19,6 +19,9 @@ export default function QuadIdeal() {
                 <div>
                   <h3 className="font-semibold">{disciplina.DISCIPLINA}</h3>
                   <p className="text-sm text-gray-600">TPEI: {disciplina.TPEI}</p>
+                  {disciplina.RECOMENDACAO && (
+                    <b className="text-sm text-orange-600">Recomendações: {disciplina.RECOMENDACAO}</b>
+                  )}
                 </div>
                 <div>
                   <Badge variant="outline" className="pl-2">
