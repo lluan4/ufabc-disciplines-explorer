@@ -4,7 +4,7 @@ import { LoaderCircle } from 'lucide-react';
 
 import { AppRouter } from './browser-router';
 
-export const App = () => {
+export default function App() {
   return (
     <React.Suspense
       fallback={
@@ -16,4 +16,4 @@ export const App = () => {
       <AppRouter />
     </React.Suspense>
   );
-};
+}
