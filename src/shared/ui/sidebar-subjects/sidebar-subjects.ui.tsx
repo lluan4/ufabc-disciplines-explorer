@@ -43,25 +43,6 @@ export default function SidebarSubjects({
     setCursor(res.nextCursor);
   }, [acronyms, cursor]);
 
-  const handleFilterSubjects = useCallback((subjects: ISubject[], text: string) => {
-    if (!text) {
-      return subjects;
-    }
-
-    const lowercasedText = text.toLowerCase();
-
-    return subjects.filter(
-      (s) => s.DISCIPLINA.toLowerCase().includes(lowercasedText) || s.SIGLA.toLowerCase().includes(lowercasedText),
-    );
-  }, []);
-
-  const handleDebounce = React.useCallback(
-    (value: string) => {
-      setSubjects((prev) => handleFilterSubjects(prev, value));
-    },
-    [loadMoreItems],
-  );
-
   useEffect(() => {
     if (!activeCategory?.categoryCode) return;
 
