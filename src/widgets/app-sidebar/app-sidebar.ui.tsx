@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { CollapsibleContent, CollapsibleTrigger } from '@radix-ui/react-collapsible';
 import { ChevronRight } from 'lucide-react';
+import { it } from 'node:test';
 
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { Button } from '@/shared/ui/components/button';
@@ -21,7 +22,15 @@ import {
   useSidebar,
 } from '@/shared/ui/components/sidebar';
 
+import {
+  Category,
+  getAllAcronymByCategoryCode,
+  getCategories,
+} from '@/entities/undergraduate-course-categories/undergraduate-course-categories.lib';
+import { undergraduateCourseCategories } from '@/entities/undergraduate-course-categories/undergraduate-course-categories.mock';
+
 import { SearchForm } from '../search-form/search-form.ui';
+import SidebarSubjects from '../sidebar-subjects/sidebar-subjects.ui';
 import { VersionSwitcher } from '../version-switcher/version-switcher.ui';
 
 const data = {
@@ -40,24 +49,6 @@ const data = {
         },
       ],
     },
-    {
-      title: 'Categorias',
-      url: '#',
-      items: [
-        {
-          title: 'Todas as Matérias',
-          url: '#',
-        },
-        {
-          title: 'Ciência e Tecnologia',
-          url: '#',
-        },
-        {
-          title: 'Bacharelado em Ciência da Computação',
-          url: '#',
-        },
-      ],
-    },
   ],
 };
 
@@ -67,20 +58,30 @@ type AppSidebarProps = {
 } & React.ComponentProps<typeof Sidebar>;
 
 export function AppSidebar({ setSecondarySidebarIsHide, secondarySidebarIsHide, ...props }: AppSidebarProps) {
-  const [activeItem, setActiveItem] = React.useState(data.navMain[0].items[0]);
-  const [teste, setTeste] = React.useState(false);
+  const [activeItem, setActiveItem] = React.useState<{ title: string; url: string } | null>(null);
+  const [activeCategory, setActiveCategory] = React.useState<Category | null>(null);
 
-  const { setOpenMobile, isMobile } = useSidebar();
+  const handleActiveItemChange = (item: { title: string; url: string }) => {
+    if (item.title !== 'Matérias') setActiveCategory(null);
+    setActiveItem(item);
+  };
 
-  const canShowSecondarySidebar = !isMobile;
-  const canShowSheet = isMobile;
+  const handleShowDisciplines = (category: Category) => {
+    setActiveCategory(category);
+  };
+
+  const categories = React.useMemo(() => {
+    return getCategories();
+  }, []);
+
+  React.useEffect(() => {
+    setSecondarySidebarIsHide(!activeCategory);
+
+    console.log('activeCategory', activeCategory);
+  }, [activeCategory]);
+
+  const isMateriasActive = activeItem?.title === 'Matérias';
   const className = secondarySidebarIsHide ? '' : 'w-[calc(var(--sidebar-width-icon)+208px)]!';
-
-  const filteredMenus = React.useMemo(() => {
-    if (activeItem.title === 'Matérias') return data.navMain;
-
-    return data.navMain.filter((item) => item.title === 'Navegação');
-  }, [activeItem]);
 
   return (
     <Sidebar collapsible="offcanvas" className="overflow-hidden *:data-[sidebar=sidebar]:flex-row" {...props}>
@@ -90,7 +91,7 @@ export function AppSidebar({ setSecondarySidebarIsHide, secondarySidebarIsHide, 
           <SearchForm />
         </SidebarHeader>
         <SidebarContent className="gap-0">
-          {filteredMenus.map((item) => (
+          {data.navMain.map((item) => (
             <SidebarGroup>
               <SidebarGroupLabel
                 asChild
@@ -106,17 +107,9 @@ export function AppSidebar({ setSecondarySidebarIsHide, secondarySidebarIsHide, 
                         children: item.title,
                         hidden: false,
                       }}
-                      className="block max-w-100 truncate"
+                      className="block max-w-100 truncate hover:cursor-pointer"
                       isActive={activeItem?.title === item.title}
-                      onClick={() => {
-                        setActiveItem(item);
-
-                        if (item.title === 'Matérias') {
-                          setSecondarySidebarIsHide(false);
-                        } else {
-                          setSecondarySidebarIsHide(true);
-                        }
-                      }}
+                      onClick={() => handleActiveItemChange(item)}
                     >
                       <a href={item.url}>{item.title}</a>
                     </SidebarMenuButton>
@@ -125,38 +118,45 @@ export function AppSidebar({ setSecondarySidebarIsHide, secondarySidebarIsHide, 
               </SidebarMenu>
             </SidebarGroup>
           ))}
+
+          {isMateriasActive && (
+            <SidebarGroup>
+              <SidebarGroupLabel
+                asChild
+                className="group/label text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground text-sm"
+              >
+                <div>Categoria</div>
+              </SidebarGroupLabel>
+              <SidebarMenu>
+                {categories.map((item) => (
+                  <SidebarMenuItem key={item.categoryCode}>
+                    <SidebarMenuButton
+                      tooltip={{
+                        children: item.categoryName,
+                        hidden: false,
+                      }}
+                      className="block max-w-100 truncate hover:cursor-pointer"
+                      isActive={activeCategory?.categoryCode === item.categoryCode}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleShowDisciplines(item);
+                      }}
+                    >
+                      <a href={item.categoryCode}>{item.categoryName}</a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroup>
+          )}
         </SidebarContent>
       </Sidebar>
 
-      {canShowSecondarySidebar && (
-        <Sidebar collapsible="none" className="flex-1 md:flex" hidden={secondarySidebarIsHide}>
-          <SidebarHeader>
-            <VersionSwitcher />
-            <SearchForm />
-          </SidebarHeader>
-          <SidebarContent className="gap-0"></SidebarContent>
-          <SidebarRail />
-        </Sidebar>
-      )}
-      {canShowSheet && (
-        <Sheet open={!secondarySidebarIsHide} onOpenChange={(open) => setSecondarySidebarIsHide(!open)}>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Are you absolutely sure?</SheetTitle>
-              <SheetDescription>
-                <Button
-                  onClick={() => {
-                    setSecondarySidebarIsHide(true);
-                    setOpenMobile(false);
-                  }}
-                >
-                  Teste
-                </Button>
-              </SheetDescription>
-            </SheetHeader>
-          </SheetContent>
-        </Sheet>
-      )}
+      <SidebarSubjects
+        secondarySidebarIsHide={secondarySidebarIsHide}
+        activeCategory={activeCategory}
+        setSecondarySidebarIsHide={setSecondarySidebarIsHide}
+      />
     </Sidebar>
   );
 }
