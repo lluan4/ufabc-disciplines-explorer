@@ -1,4 +1,6 @@
-export const idealQuadMock = {
+import IIdealQuad from './ideal-quad.contract';
+
+export const idealQuadMock: IIdealQuad = {
   '1': [
     {
       SIGLA: '',

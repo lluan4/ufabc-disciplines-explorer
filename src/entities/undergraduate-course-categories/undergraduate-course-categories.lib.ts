@@ -22,6 +22,9 @@ export function getCategories() {
 }
 
 export function getAllAcronymByCategoryCode(categoryCode: string) {
+  if (categoryCode === 'all') {
+    return undergraduateCourseCategories.map((item) => item.SIGLA);
+  }
   return undergraduateCourseCategories
     .filter((item) => item.CATEGORIA.includes(categoryCode))
     .map((item) => item.SIGLA);

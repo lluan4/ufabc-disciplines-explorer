@@ -3,6 +3,7 @@ import * as React from 'react';
 import { CollapsibleContent, CollapsibleTrigger } from '@radix-ui/react-collapsible';
 import { ChevronRight } from 'lucide-react';
 import { it } from 'node:test';
+import { Link, useLocation } from 'react-router-dom';
 
 import { useIsMobile } from '@/shared/hooks/use-mobile';
 import { Button } from '@/shared/ui/components/button';
@@ -45,7 +46,7 @@ const data = {
         },
         {
           title: 'Quad Ideal',
-          url: '#',
+          url: '/quad-ideal',
         },
       ],
     },
@@ -60,6 +61,8 @@ type AppSidebarProps = {
 export function AppSidebar({ setSecondarySidebarIsHide, secondarySidebarIsHide, ...props }: AppSidebarProps) {
   const [activeItem, setActiveItem] = React.useState<{ title: string; url: string } | null>(null);
   const [activeCategory, setActiveCategory] = React.useState<Category | null>(null);
+
+  const location = useLocation();
 
   const handleActiveItemChange = (item: { title: string; url: string }) => {
     if (item.title !== 'Matérias') setActiveCategory(null);
@@ -102,17 +105,19 @@ export function AppSidebar({ setSecondarySidebarIsHide, secondarySidebarIsHide, 
               <SidebarMenu>
                 {item.items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      tooltip={{
-                        children: item.title,
-                        hidden: false,
-                      }}
-                      className="block max-w-100 truncate hover:cursor-pointer"
-                      isActive={activeItem?.title === item.title}
-                      onClick={() => handleActiveItemChange(item)}
-                    >
-                      <a href={item.url}>{item.title}</a>
-                    </SidebarMenuButton>
+                    <Link to={item.url !== '#' ? item.url : location.pathname}>
+                      <SidebarMenuButton
+                        tooltip={{
+                          children: item.title,
+                          hidden: false,
+                        }}
+                        className="block max-w-100 truncate hover:cursor-pointer"
+                        isActive={activeItem?.title === item.title}
+                        onClick={() => handleActiveItemChange(item)}
+                      >
+                        {item.title}
+                      </SidebarMenuButton>
+                    </Link>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -128,6 +133,22 @@ export function AppSidebar({ setSecondarySidebarIsHide, secondarySidebarIsHide, 
                 <div>Categoria</div>
               </SidebarGroupLabel>
               <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    tooltip={{
+                      children: 'Todas as categorias',
+                      hidden: false,
+                    }}
+                    className="block max-w-100 truncate hover:cursor-pointer"
+                    isActive={!activeCategory}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleShowDisciplines({ categoryCode: 'all', categoryName: 'all' });
+                    }}
+                  >
+                    <a>Todas as categorias</a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                 {categories.map((item) => (
                   <SidebarMenuItem key={item.categoryCode}>
                     <SidebarMenuButton
@@ -142,7 +163,7 @@ export function AppSidebar({ setSecondarySidebarIsHide, secondarySidebarIsHide, 
                         handleShowDisciplines(item);
                       }}
                     >
-                      <a href={item.categoryCode}>{item.categoryName}</a>
+                      <a>{item.categoryName}</a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

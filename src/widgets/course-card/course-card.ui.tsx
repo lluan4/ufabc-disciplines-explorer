@@ -43,7 +43,7 @@ export function CourseCard({ subjectName, subjectCode, categoryName, tpei, handl
         <Badge variant="outline" className="pl-2">
           {categoryName}
         </Badge>
-        <Badge className="bg-green-200 text-green-900">{subjectCode}</Badge>
+        {subjectCode !== 'all' && <Badge className="bg-green-200 text-green-900">{subjectCode}</Badge>}
       </CardContent>
       <CardFooter className="px-2 py-0">
         <CardDescription>TPEI: {tpei}</CardDescription>
