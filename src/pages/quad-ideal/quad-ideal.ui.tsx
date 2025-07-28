@@ -1,10 +1,18 @@
 import { Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { Badge } from '@/shared/ui/components/badge';
 
 import { idealQuadMock } from '@/entities/ideal-quad/ideal-quad.mock';
+import { IDisciplina } from '@/entities/ideal-quad/ideal-quad.model';
 
 export default function QuadIdeal() {
+  const navigate = useNavigate();
+
+  const handleNavigate = (disciplina: IDisciplina) => {
+    console.log('Navegando para a disciplina:', disciplina);
+    navigate(`/all/${disciplina.SIGLA}`);
+  };
   return (
     <div className="p-4">
       {Object.entries(idealQuadMock).map(([period, disciplines]) => (
@@ -15,7 +23,13 @@ export default function QuadIdeal() {
 
           <div className="flex flex-col gap-2">
             {disciplines.map((disciplina) => (
-              <div key={disciplina.SIGLA} className="bg-blue-100/20 p-2 rounded-md flex justify-between items-center">
+              <div
+                key={disciplina.SIGLA}
+                className="bg-blue-100/20 p-2 rounded-md flex justify-between items-center hover:bg-blue-100/30 transition-colors cursor-pointer pointer-coarse:"
+                onClick={() => {
+                  handleNavigate(disciplina);
+                }}
+              >
                 <div>
                   <h3 className="font-semibold">{disciplina.DISCIPLINA}</h3>
                   <p className="text-sm text-gray-600">TPEI: {disciplina.TPEI}</p>
